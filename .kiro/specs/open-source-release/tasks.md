@@ -334,29 +334,29 @@ Staging_Folder" and "the Original_Folder", and the full stage output stays in
       CI jobs passed on the CI run on main after the merge
     - _Requirements: 5.2, 5.3, 5.4, 5.8, 6.13_
 
-- [ ] 7. Stage 6: close
-  - [ ] 7.1 Re-prove the published code
+- [x] 7. Stage 6: close
+  - [x] 7.1 Re-prove the published code
     - In the staging venv, replace the editable install of `tree/` with an editable install of the
       Public_Repo at the merged main; run the comparison and the Parity_Check against it
     - _Requirements: 1.6, 5.2, 5.3_
-  - [ ] 7.2 Convert the author's plan
+  - [x] 7.2 Convert the author's plan
     - Convert `<Data_Dir>/migration/app_plan.old.json` through `key_mapping.py` and write it to
       `<Data_Dir>/plan.json` with `plan_io.save_plan`
     - _Requirements: 5.7_
-  - [ ] 7.3 Confirm the App loads the converted plan
+  - [x] 7.3 Confirm the App loads the converted plan
     - Start the App from the Public_Repo with the default Data_Dir and confirm it loads `plan.json` with no
       warning and "Save as default" enabled
     - _Requirements: 5.7, 7.2, 7.3_
-  - [ ] 7.4 Run stage 6 checks and record the result in the Migration record
+  - [x] 7.4 Run stage 6 checks and record the result in the Migration record
     - Pass criteria: the comparison and the Parity_Check pass against the published main; `make verify`
       passes in the Public_Repo with `RETVANA_DATA_DIR` pointing at an empty temp directory, so no
       Original_Folder or `migration/` file is used; the App loaded the converted plan
     - _Requirements: 5.2, 5.3, 5.4, 5.8, 5.9_
-  - [ ] 7.5 Delete the Staging_Folder
+  - [x] 7.5 Delete the Staging_Folder
     - Delete the Staging_Folder with its venv, `tree/` and `tooling/`, including the copied parity check
       and golden master
     - _Requirements: 5.5_
-  - [ ] 7.6 (author) Decide on the Original_Folder and the migration data
+  - [x] 7.6 (author) Decide on the Original_Folder and the migration data
     - Decide whether to archive the original spreadsheets outside any repository, delete the
       Original_Folder, and delete `<Data_Dir>/migration/`
     - _Requirements: 5.9_
@@ -430,3 +430,4 @@ Stage 2 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff
 Stage 3 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 17/17 PASS
 Stage 4 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 21/21 PASS
 Stage 5 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 21/21 PASS
+Stage 6 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 21/21 PASS
