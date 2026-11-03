@@ -1,4 +1,4 @@
-"""Check plan file loading and saving (Requirement 7.1-7.5, 7.7-7.9).
+"""Check plan file loading and saving (Requirement 7.1-7.5, 7.7-7.9; nonreg-accounts 5.8, 10.7).
   .venv/bin/python scripts/plan_io_check.py
 Every case runs in a temporary directory, and RETVANA_DATA_DIR is restored afterwards, so the real
 Data_Dir is never read or written. The platformdirs default is compared by path only; nothing is created.
@@ -140,6 +140,45 @@ try:
                   and unchanged and not (d / TEMP_FILE).exists(), str(raised))
 
         os.chmod(no_perm / PLAN_FILE, stat.S_IRUSR | stat.S_IWUSR)   # so the temp dir can be removed
+
+        # nonreg-accounts Req 5.8, 10.7: a legacy plan.json (base_nonreg_p2, no nonreg account) loads with
+        # the converted account and no error, is left byte-for-byte unchanged on load, and save_plan then
+        # writes the account and no base_nonreg_p2. Synthetic Example_Plan data only.
+        legacy = json.loads(example_plan().to_json())
+        legacy['accounts'] = [a for a in legacy['accounts'] if a['name'] != 'Sam non-registered']
+        legacy['base_nonreg_p2'] = 150000
+        check('legacy fixture has no nonreg account and base_nonreg_p2 150000',
+              all(a['kind'] != 'nonreg' for a in legacy['accounts']) and legacy['base_nonreg_p2'] == 150000)
+        legacy_bytes = json.dumps(legacy, indent=2).encode()
+        legacy_dir = write_case('legacy', legacy_bytes)
+        legacy_mtime = (legacy_dir / PLAN_FILE).stat().st_mtime_ns
+        # Rule: one Equivalent_Account (Person 2, kind nonreg, return 0, contribution 0, TFSA limit off,
+        # volatility 0) with balance = base_nonreg_p2, named "<Person 2's name> non-registered", appended.
+        p2_name = next(p['name'] for p in legacy['people'] if p['key'] == 'P2')
+        expected_acct = {'name': f'{p2_name} non-registered', 'owner': 'P2', 'kind': 'nonreg',
+                         'balance': 150000, 'return_rate': 0.0, 'contribution': 0,
+                         'contribution_is_tfsa_limit': False, 'volatility': 0.0}
+        expected_accounts = legacy['accounts'] + [expected_acct]
+        r = load_saved_plan(legacy_dir)
+        loaded = json.loads(r.plan.to_json()) if r.plan is not None else {}
+        check('legacy plan.json loads with no error and the converted account appended',
+              r.error is None and r.plan is not None and loaded.get('accounts') == expected_accounts,
+              str(r.error) if r.error else str(loaded.get('accounts', [])[-1:]))
+        check('loaded legacy plan has no base_nonreg_p2', 'base_nonreg_p2' not in loaded)
+        check('loading the legacy plan.json leaves its bytes unchanged, no temp file',
+              (legacy_dir / PLAN_FILE).read_bytes() == legacy_bytes
+              and (legacy_dir / PLAN_FILE).stat().st_mtime_ns == legacy_mtime
+              and not (legacy_dir / TEMP_FILE).exists())
+        if r.plan is not None:
+            save_plan(r.plan, legacy_dir)
+            written_text = (legacy_dir / PLAN_FILE).read_text()
+            written = json.loads(written_text)
+            check('save_plan after a legacy load writes the account and no base_nonreg_p2',
+                  written.get('accounts') == expected_accounts and 'base_nonreg_p2' not in written
+                  and 'base_nonreg_p2' not in written_text and not (legacy_dir / TEMP_FILE).exists())
+        else:
+            check('save_plan after a legacy load writes the account and no base_nonreg_p2', False,
+                  'legacy plan did not load')
 finally:
     set_env(saved_env)
 

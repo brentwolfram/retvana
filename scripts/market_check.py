@@ -75,10 +75,13 @@ def hand_returns(z, year, shock=0.0):
 
 
 def hand_starts(p, year, z, surplus, vary=True):
-    """Req 2.1/2.3 and 14.2: each account grows at its own rate (and, before retirement, its own
-    volatility on the same shocks), contributions at year end; the surplus split as in Req 2.3."""
+    """Req 2.1/2.3 (as amended by nonreg-accounts) and 14.2: each account of kind 'registered',
+    'tfsa' or 'nonreg' grows at its own rate (and, before retirement, its own volatility on the same
+    shocks), contributions at year end, and is summed by (owner, kind). The surplus is added to
+    Person 2's non-registered total: nonreg_p2 = max(0, after); any shortfall comes out of Person 1's
+    pool: nonreg_p1 = options + Person 1's non-registered total + min(0, after)."""
     n = z.shape[0]
-    tot = {(o, k): np.zeros(n) for o in ('P1', 'P2') for k in ('registered', 'tfsa')}
+    tot = {(o, k): np.zeros(n) for o in ('P1', 'P2') for k in ('registered', 'tfsa', 'nonreg')}
     for a in p.accounts:
         pmt = p.tfsa_limit if a.contribution_is_tfsa_limit else a.contribution
         bal = np.full(n, float(a.balance))
@@ -88,8 +91,9 @@ def hand_starts(p, year, z, surplus, vary=True):
         tot[(a.owner, a.kind)] += bal
     options = sum(max(g.available * (p.options_share_price - g.grant_price), 0)
                   * (1 - 0.5 * p.options_marginal_rate) for g in p.option_grants)
-    after = p.base_nonreg_p2 + np.broadcast_to(np.asarray(surplus, dtype=float), (n,))
-    return Starts(nonreg_p1=options + np.minimum(0.0, after), nonreg_p2=np.maximum(0.0, after),
+    after = tot[('P2', 'nonreg')] + np.broadcast_to(np.asarray(surplus, dtype=float), (n,))
+    return Starts(nonreg_p1=options + tot[('P1', 'nonreg')] + np.minimum(0.0, after),
+                  nonreg_p2=np.maximum(0.0, after),
                   reg_p1=tot[('P1', 'registered')], reg_p2=tot[('P2', 'registered')],
                   tfsa_p1=tot[('P1', 'tfsa')], tfsa_p2=tot[('P2', 'tfsa')])
 

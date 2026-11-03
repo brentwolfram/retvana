@@ -14,7 +14,7 @@ import pandas as pd
 
 from . import engine as _engine
 from . import property_model as pm
-from .config import Plan
+from .config import ACCOUNT_KINDS, Plan, check_account_kind
 from .engine import project, summary
 from .vector import Starts, project_many
 
@@ -145,8 +145,9 @@ def market_shocks(plan: Plan, n_paths: int, seed: int = MARKET_SEED) -> np.ndarr
 def _starts_for_year(plan: Plan, year: int, z: np.ndarray, surplus) -> tuple[Starts, np.ndarray]:
     n = z.shape[0]
     pre = year - plan.current_year
-    tot = {(o, k): np.zeros(n) for o in ('P1', 'P2') for k in ('registered', 'tfsa')}
+    tot = {(o, k): np.zeros(n) for o in ('P1', 'P2') for k in ACCOUNT_KINDS}
     for a in plan.accounts:
+        check_account_kind(a)
         pmt = plan.tfsa_limit if a.contribution_is_tfsa_limit else a.contribution
         bal = np.full(n, float(a.balance))
         for t in range(pre):
@@ -157,8 +158,9 @@ def _starts_for_year(plan: Plan, year: int, z: np.ndarray, surplus) -> tuple[Sta
             bal = bal * (1 + g) + pmt
         tot[(a.owner, a.kind)] += bal
     options = _engine.options_net_proceeds(plan)
-    after = plan.base_nonreg_p2 + np.broadcast_to(np.asarray(surplus, dtype=float), (n,))
-    st = Starts(nonreg_p1=options + np.minimum(0.0, after), nonreg_p2=np.maximum(0.0, after),
+    after = tot[('P2', 'nonreg')] + np.broadcast_to(np.asarray(surplus, dtype=float), (n,))
+    st = Starts(nonreg_p1=options + tot[('P1', 'nonreg')] + np.minimum(0.0, after),
+                nonreg_p2=np.maximum(0.0, after),
                 reg_p1=tot[('P1', 'registered')], reg_p2=tot[('P2', 'registered')],
                 tfsa_p1=tot[('P1', 'tfsa')], tfsa_p2=tot[('P2', 'tfsa')])
     return st, after

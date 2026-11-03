@@ -54,6 +54,8 @@ END = EX.end_year
 at = AppTest.from_file(os.path.join(ROOT, 'app.py'), default_timeout=120)
 at.run()
 check(at, f'default (recovery, {EX.start_year})')
+assert any(x.value == '**Investment accounts**' for x in at.markdown), 'expected the Investment accounts heading'
+assert 'w_bnr' not in [n.key for n in at.number_input], 'the old non-registered input is still there'
 
 at.slider(key='w_start').set_value(2030).run()
 m = check(at, 'retirement year -> 2030')
@@ -198,6 +200,21 @@ at = AppTest.from_file(os.path.join(ROOT, 'app.py'), default_timeout=120).run()
 check(at, 'plan file: reload saved plan')
 assert at.title[0].value == 'Retiring in 2031', at.title[0].value
 
+# a plan saved before nonreg-accounts: base_nonreg_p2 instead of the non-registered account
+import json                                       # noqa: E402
+d = temp_data_dir()
+d.mkdir()
+legacy = example_plan().to_dict()
+legacy['accounts'] = [a for a in legacy['accounts'] if a['name'] != 'Sam non-registered']
+legacy['base_nonreg_p2'] = 150000
+legacy_bytes = json.dumps(legacy, indent=2).encode('utf-8')
+(d / 'plan.json').write_bytes(legacy_bytes)
+at = AppTest.from_file(os.path.join(ROOT, 'app.py'), default_timeout=120).run()
+check(at, 'plan file: legacy base_nonreg_p2')
+assert not at.warning, [w.value for w in at.warning]
+names = [a.name for a in at.session_state['plan'].accounts]
+assert 'Sam non-registered' in names, names
+assert (d / 'plan.json').read_bytes() == legacy_bytes
 d = temp_data_dir()
 d.mkdir()
 broken = b'{"not": "a plan"'

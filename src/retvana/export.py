@@ -229,7 +229,7 @@ def to_excel(plan: Plan, df: pd.DataFrame, start, summ: dict, compare: pd.DataFr
                              'Yearly contribution': plan.tfsa_limit if a.contribution_is_tfsa_limit else a.contribution,
                              f'Value at {plan.start_year}': start.account_fv[a.name]}
                             for a in plan.accounts])
-        rr = _write_table(wb, wsi, acc, 0, title='Registered and TFSA accounts')
+        rr = _write_table(wb, wsi, acc, 0, title='Investment accounts')
         exp = pd.DataFrame([{'Expense': e.name, 'Monthly (go-go)': e.monthly,
                              'Monthly (later)': e.monthly if e.monthly_later is None else e.monthly_later,
                              'Discretionary': 'yes' if e.discretionary else 'no'} for e in plan.expenses])

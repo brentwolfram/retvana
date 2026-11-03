@@ -77,8 +77,9 @@ Each new check is a script in `scripts/`. It follows the existing pattern:
     The optimizer grid is 17 targets × 3 ages.
   - 6.6 The estate is checked by hand. `estate_after_tax` equals the inline formula in
     `_market_success` on the same final row (rule coded twice).
-  - 6.7 Raising `base_nonreg_p2` never lowers total capital in any year, over a sweep of 10 values,
-    in legacy and recovery modes (P2).
+  - 6.7 Raising the balance of Person 2's non-registered account ("Sam non-registered" in the
+    Example_Plan) never lowers total capital in any year, over a sweep of 10 values, in legacy and
+    recovery modes (P2). *Amended by nonreg-accounts* (was: raising `base_nonreg_p2`).
   - 6.8 Each analysis entry point leaves its input plan unchanged (P6).
   - _Requirements: 6, 7, 9.1–9.5, 9.7, 17; design P2, P6_
 

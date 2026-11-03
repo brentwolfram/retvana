@@ -101,6 +101,16 @@
       "contribution": 0,
       "contribution_is_tfsa_limit": true,
       "volatility": 0.06
+    },
+    {
+      "name": "Sam non-registered",
+      "owner": "P2",
+      "kind": "nonreg",
+      "balance": 150000,
+      "return_rate": 0.0,
+      "contribution": 0,
+      "contribution_is_tfsa_limit": false,
+      "volatility": 0.0
     }
   ],
   "expenses": [
@@ -179,7 +189,6 @@
   ],
   "income_splitting": false,
   "tfsa_limit": 7000,
-  "base_nonreg_p2": 150000,
   "options_share_price": 4.0,
   "options_marginal_rate": 0.5353,
   "option_grants": [

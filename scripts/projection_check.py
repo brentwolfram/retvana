@@ -381,16 +381,19 @@ check('estate_after_tax = _market_success inline formula on the same final row, 
 
 
 # ------------------------------------------------------------------ 6.7 P2 monotonicity
+# Feature: nonreg-accounts, Property 10: More Person 2 non-registered money never lowers capital
 BASES = [-400_000 + 200_000 * i for i in range(10)]
 for label, mk in (('legacy, spreadsheet settings', base_plan), ('recovery, app defaults', app_plan)):
     caps = []
     for b in BASES:
         p = mk()
-        p.base_nonreg_p2 = float(b)
+        nonreg_p2 = [a for a in p.accounts if a.owner == 'P2' and a.kind == 'nonreg']
+        assert len(nonreg_p2) == 1, 'the example plan has one Person 2 non-registered account'
+        nonreg_p2[0].balance = float(b)
         caps.append(project(p)[0]['C'])
     bad = [f'{BASES[i]:,}->{BASES[i + 1]:,} in {y}: {caps[i][y]:,.2f} > {caps[i + 1][y]:,.2f}'
            for i in range(len(BASES) - 1) for y in caps[i].index if caps[i + 1][y] < caps[i][y] - 0.01]
-    check(f'P2 ({label}): raising Person 2\'s base non-registered from -$400K to $1.4M in 10 steps never '
+    check(f'P2 ({label}): raising Person 2\'s non-registered account from -$400K to $1.4M in 10 steps never '
           f'lowers total capital in any year', not bad, '; '.join(bad[:3]))
 
 

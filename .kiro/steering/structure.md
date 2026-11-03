@@ -43,7 +43,7 @@ app.py  -> analysis, engine, export, property_model, config, plan_io
 ## Where checks live
 
 - `scripts/<area>_check.py`, one per model area (tax, benefits, property, projection, vector, survivor,
-  spending, market, consulting, corp, export, plan), plus `regression_check.py`, `examples_check.py`,
+  spending, market, nonreg, consulting, corp, export, plan), plus `regression_check.py`, `examples_check.py`,
   `plan_io_check.py`, `deploy_check.py`, the leak-guard checks and `repo_check.py`.
 - `scripts/smoke_test.py` runs the App and the Excel export headless, with a temporary Data_Dir.
 - New checks follow the `*_check.py` name so `verify.py` picks them up. Generators and the release gate
