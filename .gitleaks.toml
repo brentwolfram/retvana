@@ -1,0 +1,14 @@
+# gitleaks configuration for the pre-commit hook, CI and the release gate.
+#
+# Uses the full default gitleaks rule set unchanged. A scan of the working tree
+# with gitleaks 8.30.1 (including the generated scripts/regression_golden.json)
+# reports no findings, so no repo-specific allowlist is defined.
+#
+# Add an allowlist entry only for a reviewed false positive. Make it as narrow as
+# possible (a single path or a single regex), and document why it is safe in a
+# comment next to it. Never allowlist a whole directory or a whole rule.
+
+title = "retvana gitleaks config"
+
+[extend]
+useDefault = true
