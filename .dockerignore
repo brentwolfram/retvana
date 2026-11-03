@@ -1,0 +1,10 @@
+.venv
+**/__pycache__
+*.pyc
+data
+scripts
+requirements-dev.txt
+Dockerfile
+docker-compose.yml
+Makefile
+.dockerignore
