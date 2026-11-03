@@ -9,13 +9,13 @@ description = "Retirement drawdown planner for a two-person Canadian household (
 license = "Apache-2.0"
 requires-python = ">=3.13,<3.14"
 dependencies = [
-    "streamlit==1.66.0",
-    "pandas==3.0.6",
+    "streamlit==1.66.1",
+    "pandas==3.1.0",
     "numpy==2.5.4",
     "plotly==7.1.0",
-    "xlsxwriter==3.2.9",
+    "xlsxwriter==3.3.1",
     "openpyxl==3.1.5",
-    "platformdirs==4.13.6",
+    "platformdirs==4.14.2",
 ]
 
 [project.optional-dependencies]
