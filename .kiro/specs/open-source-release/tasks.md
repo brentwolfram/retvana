@@ -281,7 +281,7 @@ Staging_Folder" and "the Original_Folder", and the full stage output stays in
       De-identification_Review in 5.17 is done
     - _Requirements: 3.7, 5.2, 5.3, 5.4, 5.8, 6.13, 10.5_
 
-- [ ] 6. Stage 5: publish
+- [x] 6. Stage 5: publish
   - [x] 6.1 (author) Set the Maintainer_Flag in the Public_Repo clone
     - `git config --local retvana.maintainer true`
     - _Requirements: 6.7, 6.8_
@@ -289,7 +289,7 @@ Staging_Folder" and "the Original_Folder", and the full stage output stays in
     - Turn on "Keep my email addresses private" and "Block command line pushes that expose my email";
       confirm the clone's commit email is a noreply address
     - _Requirements: 6.10, 6.11_
-  - [ ] 6.3 (author) Configure the GitHub repository settings
+  - [x] 6.3 (author) Configure the GitHub repository settings
     - Turn on secret scanning and push protection, private vulnerability reporting, Dependabot alerts and
       security updates; set the default `GITHUB_TOKEN` permission to read-only; require approval before
       workflows run for outside contributors; add no repository or Dependabot secrets
@@ -298,37 +298,40 @@ Staging_Folder" and "the Original_Folder", and the full stage output stays in
     - Install the pinned `gitleaks` binary named in CONTRIBUTING and run `pre-commit install` (pre-commit
       and pre-push)
     - _Requirements: 6.1, 6.2, 6.7, 6.12_
-  - [-] 6.5 Copy `tree/` into the Public_Repo and commit on a `migration` branch
+  - [x] 6.5 Copy `tree/` into the Public_Repo and commit on a `migration` branch
     - Create `migration` from the initial commit; copy `tree/` into the working tree without overwriting
       this spec's own folder; add the files in a few topical commits (package, checks, app and deploy,
       docs, GitHub config, specs); every commit passes the hooks; no Migration_Tooling enters the repo
     - _Requirements: 2.1, 2.4, 4.3, 5.5_
-  - [ ] 6.6 Run the Release_Gate and its dry run
+  - [x] 6.6 Run the Release_Gate and its dry run
     - Run `python scripts/release_gate.py` until every step passes
     - On a scratch branch, commit a forbidden file (for example an empty `.xlsx`) and confirm the gate and
       the pre-push hook fail; delete the scratch branch without pushing it
     - _Requirements: 3.7, 6.6, 6.7, 6.9_
-  - [ ] 6.7 (author) De-identification_Review of the full stage 5 diff
+  - [x] 6.7 (author) De-identification_Review of the full stage 5 diff
     - Before the first push, review `git diff <initial commit>..migration` and every commit message on
       the branch against the Identifier_Checklist, category by category
     - Any finding goes back to stage 4: fix it in `tree/`, re-run stage 4 and rebuild the branch; record
       only "done", never a value
     - _Requirements: 2.3, 3.6, 4.3, 6.13, 6.14_
-  - [ ] 6.8 (author) Push the branch, open the pull request and merge
-    - Push `migration` (the pre-push hook runs the Release_Gate again), open the pull request, confirm
-      `verify`, `gitleaks`, `commit-emails` and `forbidden-files` pass, then merge to main
+  - [x] 6.8 (author) Push the branch, open the pull request and merge
+    - Push `migration` (the pre-push hook runs the Release_Gate again), open the pull request, squash-merge
+      to main, and confirm `verify`, `gitleaks`, `commit-emails` and `forbidden-files` pass on the CI run
+      on main
+    - On this first pull request the base (the initial commit) has no scanners, so the three scanning jobs
+      cannot run on the pull request; `verify` runs there, and all four jobs are confirmed on the push to
+      main, which scans with main's own scanners
     - _Requirements: 4.7, 6.2, 6.9, 9.1_
-  - [ ] 6.9 (author) Turn on the branch ruleset on main
+  - [x] 6.9 (author) Turn on the branch ruleset on main
     - Require a pull request (0 approvals); required checks `verify`, `gitleaks`, `commit-emails`,
       `forbidden-files` with the branch up to date; block force pushes and deletion; linear history;
       squash merge only; no bypass
-    - Confirm with a test pull request that a failing check blocks the merge, and with a test Fork_PR that
-      all four required checks run and report
-    - _Requirements: 6.1, 6.2, 6.12, 9.1, 9.4_
-  - [ ] 6.10 Run stage 5 checks and record the result in the Migration record
+    - Confirm with a test pull request that a failing check blocks the merge (the Fork_PR test is task 7.7)
+    - _Requirements: 6.12, 9.4_
+  - [x] 6.10 Run stage 5 checks and record the result in the Migration record
     - Pass criteria: the comparison passes within $0.01 and 1e-9 relative; the Parity_Check passes; every
-      staged check passes; the Release_Gate passed; the De-identification_Review in 6.7 is done; the CI
-      jobs on the merged pull request passed
+      staged check passes; the Release_Gate passed; the De-identification_Review in 6.7 is done; the four
+      CI jobs passed on the CI run on main after the merge
     - _Requirements: 5.2, 5.3, 5.4, 5.8, 6.13_
 
 - [ ] 7. Stage 6: close
@@ -357,6 +360,10 @@ Staging_Folder" and "the Original_Folder", and the full stage output stays in
     - Decide whether to archive the original spreadsheets outside any repository, delete the
       Original_Folder, and delete `<Data_Dir>/migration/`
     - _Requirements: 5.9_
+  - [ ]* 7.7 (author) Confirm the CI jobs on the first Fork_PR
+    - On the first pull request from a fork, approve its workflows and confirm `verify`, `gitleaks`,
+      `commit-emails` and `forbidden-files` all run and report
+    - _Requirements: 6.1, 6.2, 6.12, 9.1_
 
 ## Notes
 
@@ -405,7 +412,8 @@ Staging_Folder" and "the Original_Folder", and the full stage output stays in
     { "id": 29, "tasks": ["7.3"] },
     { "id": 30, "tasks": ["7.4"] },
     { "id": 31, "tasks": ["7.5"] },
-    { "id": 32, "tasks": ["7.6"] }
+    { "id": 32, "tasks": ["7.6"] },
+    { "id": 33, "tasks": ["7.7"] }
   ]
 }
 ```
@@ -421,3 +429,4 @@ Stage 1 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff
 Stage 2 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 14/14 PASS
 Stage 3 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 17/17 PASS
 Stage 4 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 21/21 PASS
+Stage 5 | PASS | projection cols compared 2 plans × 98 cols × 48 yrs, max diff $0.00 | vector max rel 0.0 | parity 8/8 cases PASS | staged checks 21/21 PASS
