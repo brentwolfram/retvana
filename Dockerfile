@@ -21,6 +21,7 @@ RUN pip install . && rm -rf /app/src /app/pyproject.toml /app/build
 RUN useradd --create-home --uid 1000 retvana \
     && mkdir -p /data && chown retvana:retvana /data
 COPY --chown=retvana:retvana .streamlit ./.streamlit
+COPY --chown=retvana:retvana assets ./assets
 COPY --chown=retvana:retvana app.py .
 USER retvana
 EXPOSE 8501

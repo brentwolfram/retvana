@@ -3,3 +3,4 @@
 # '*' matches within one path segment only. Blank lines and '#' comments are ignored.
 # An allowed PNG must still carry no tEXt, iTXt, zTXt or eXIf chunks.
 docs/images/*.png
+assets/*.png

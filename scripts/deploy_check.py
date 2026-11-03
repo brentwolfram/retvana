@@ -9,7 +9,8 @@
   The compose file is parsed with a small block-YAML parser (PyYAML is not a dependency); it
   stops with an error on syntax it does not understand rather than guessing.
 - Dockerfile: the final stage is python:3.13-slim pinned by digest, installs the package with
-  `pip install .`, and its last USER is retvana (not root or 0).
+  `pip install .`, copies the assets directory into the image, and its last USER is retvana
+  (not root or 0).
 - .streamlit/config.toml (tomllib): server.address is "localhost".
 - Makefile: has up, down, rebuild, logs, status and verify targets; PYTHON ?= .venv/bin/python;
   RETVANA_HOST_DATA_DIR defaults to the platformdirs path and is exported.
@@ -239,6 +240,14 @@ check('last USER is retvana', name == 'retvana', f'USER {last}')
 base = instrs[stages[-1]].split()[1] if stages and len(instrs[stages[-1]].split()) > 1 else ''
 check('final stage is python:3.13-slim pinned by digest',
       re.fullmatch(r'python:3\.13-slim@sha256:[0-9a-f]{64}', base) is not None, f'FROM {base}')
+copies = [s for s in final if s.split()[0].upper() == 'COPY']
+def _copies_assets(instr):
+    # tokens after COPY, dropping --flag options; the last is the destination, the rest sources
+    toks = [t for t in instr.split()[1:] if not t.startswith('--')]
+    return any(t.strip('/').split('/')[-1] == 'assets' or t.strip('/') in ('assets', './assets')
+               for t in toks[:-1])
+check('final stage copies the assets directory into the image',
+      any(_copies_assets(c) for c in copies), f'COPY {copies}')
 runs = [s.split(None, 1)[1] for s in final if s.split()[0].upper() == 'RUN' and len(s.split()) > 1]
 check('installs the package with pip install . (not editable)',
       any(re.search(r'\bpip install \.(\s|$|&&)', r) for r in runs)

@@ -9,6 +9,7 @@ Covers Requirements 1.2, 1.3, 3.3, 6.5, 8.4, 9.2, 9.3, 10.1 and 10.4:
   - no file with a forbidden extension (the list in scripts/forbidden_files.py) is in the repo
   - the required docs, steering files, baseline spec and GitHub files are present
   - Dependabot covers pip, GitHub Actions and Docker
+  - the logo assets exist, are allowlisted PNGs and carry no metadata chunks
 Inside a git work tree the file list is `git ls-files`; outside one (the Migration's staging tree)
 it is a directory walk that skips .git/, .venv/, __pycache__/ and *.egg-info/. This check reads
 only and writes no file. Standard library only, plus the installed retvana package."""
@@ -183,6 +184,21 @@ check(f'all {len(owners)} account and consulting owners are P1 or P2', not bad, 
 # --- Forbidden file types (2.2, 6.4) ---
 found = [p for p in files if os.path.splitext(p)[1].lower() in FORBIDDEN_EXTENSIONS]
 check(f'no forbidden file types among {len(files)} files', not found, short(found, 10) if found else '')
+
+# --- Logo assets (sidebar logo and browser tab icon) ---
+LOGO_ASSETS = ['assets/logo.png', 'assets/logo-icon.png']
+allow_patterns = forbidden_files.load_allowlist(ROOT)
+for rel in LOGO_ASSETS:
+    ap = os.path.join(ROOT, rel)
+    present = os.path.isfile(ap)
+    check(f'{rel} is present', present)
+    check(f'{rel} is allowlisted in .binary-allow',
+          forbidden_files.path_allowed(rel, allow_patterns))
+    if present:
+        data = forbidden_files.read_local(ap)
+        check(f'{rel} is a clean PNG with no metadata chunks',
+              data is not None and data.startswith(forbidden_files.PNG_SIGNATURE)
+              and not forbidden_files.png_has_metadata(data))
 
 # --- Dependabot (9.3) ---
 dep_path = os.path.join(ROOT, '.github', 'dependabot.yml')

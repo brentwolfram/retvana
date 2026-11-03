@@ -54,6 +54,10 @@ END = EX.end_year
 at = AppTest.from_file(os.path.join(ROOT, 'app.py'), default_timeout=120)
 at.run()
 check(at, f'default (recovery, {EX.start_year})')
+# the sidebar shows the logo image and the retvana name (not the old emoji heading)
+assert len(at.image) >= 1, 'expected the sidebar logo image'
+assert any(m.value == '## retvana' for m in at.markdown), 'expected the retvana heading text'
+assert not any('🌅' in m.value for m in at.markdown), 'the old emoji heading is still shown'
 assert any(x.value == '**Investment accounts**' for x in at.markdown), 'expected the Investment accounts heading'
 assert 'w_bnr' not in [n.key for n in at.number_input], 'the old non-registered input is still there'
 
