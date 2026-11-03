@@ -11,6 +11,7 @@ results in step with every edit.
 from __future__ import annotations
 
 import datetime
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -23,7 +24,13 @@ from retvana import property_model as pm
 from retvana.config import ACCOUNT_KINDS, Account, ConsultingIncome, ExpenseItem, OptionGrant, Plan, example_plan
 from retvana.plan_io import PlanFileUnreadable, data_dir, load_saved_plan, save_plan
 
-st.set_page_config(page_title='retvana - Retirement Model', page_icon='🌅', layout='wide')
+# Logo assets sit beside this file, so the paths resolve the same for `make run` from the
+# repository root and inside the container (WORKDIR /app, assets copied to /app/assets).
+ASSETS = Path(__file__).parent / 'assets'
+LOGO = ASSETS / 'logo.png'
+LOGO_ICON = ASSETS / 'logo-icon.png'
+st.set_page_config(page_title='retvana - Retirement Model',
+                   page_icon=str(LOGO_ICON) if LOGO_ICON.is_file() else '🌅', layout='wide')
 
 # ------------------------------------------------------------------ theme (light / dark)
 # Follows the OS appearance or the Settings menu choice; Streamlit reruns the script
@@ -144,7 +151,11 @@ p1, p2 = plan.person('P1'), plan.person('P2')
 
 # ================================================================== SIDEBAR INPUTS
 with st.sidebar:
-    st.markdown('## 🌅 retvana')
+    if LOGO.is_file():
+        st.image(str(LOGO), width=120)
+        st.markdown('## retvana')
+    else:
+        st.markdown('## 🌅 retvana')
     st.caption(f'Retirement model for {p1.name} & {p2.name}')
     plan.start_year = st.slider('Retirement year', 2027, 2040, plan.start_year, key='w_start')
     mode = st.radio('Property values', ['Recovery model', 'Simple scenarios'],

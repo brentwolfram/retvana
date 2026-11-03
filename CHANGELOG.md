@@ -14,6 +14,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- The app shows the retvana logo in the sidebar and as the browser tab icon, replacing the sunrise
+  emoji. The logo files live in `assets/`; if they are missing the app falls back to the emoji.
 - The "Registered and TFSA accounts" table in the app and the export is now "Investment accounts".
 - A plan saved with `base_nonreg_p2` loads with that amount as a Person 2 non-registered account at 0%
   growth and no contribution, which gives the same results as before.
