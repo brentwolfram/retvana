@@ -17,7 +17,7 @@ import numpy as np
 import pandas as pd
 
 from . import property_model as pm
-from .config import Plan
+from .config import Plan, check_account_kind
 
 # friendly names for the exported / displayed table
 COLUMNS = {
@@ -84,6 +84,8 @@ class Start:
     tfsa_p1: float
     tfsa_p2: float
     shortfall_from_p1: float
+    nonreg_total_p1: float        # Non_Registered_Total(P1): Person 1's non-registered accounts at retirement
+    nonreg_total_p2: float        # Non_Registered_Total(P2)
     account_fv: dict
 
 
@@ -114,19 +116,22 @@ def starting_position(plan: Plan, sale: tuple[dict, float] | None = None) -> Sta
     n = plan.start_year - plan.current_year
     acc = {}
     for a in plan.accounts:
+        check_account_kind(a)
         pmt = plan.tfsa_limit if a.contribution_is_tfsa_limit else a.contribution
         acc[a.name] = fv(a.return_rate, n, pmt, a.balance)
-    tot = lambda owner, kind: sum(acc[a.name] for a in plan.accounts if a.owner == owner and a.kind == kind)
+    tot = lambda owner, kind: sum((acc[a.name] for a in plan.accounts if a.owner == owner and a.kind == kind), 0.0)
     values, price = sale if sale is not None else pm.sale_values(plan, plan.start_year)
     wf = pm.waterfall(plan, plan.start_year, values, price)
     options = options_net_proceeds(plan)
-    after = plan.base_nonreg_p2 + wf.surplus
+    n1, n2 = tot('P1', 'nonreg'), tot('P2', 'nonreg')
+    after = n2 + wf.surplus
     gogo, later = expenses_at_start(plan)
     return Start(gogo, later, options, wf,
-                 nonreg_p1=options + min(0.0, after), nonreg_p2=max(0.0, after),
+                 nonreg_p1=options + n1 + min(0.0, after), nonreg_p2=max(0.0, after),
                  reg_p1=tot('P1', 'registered'), reg_p2=tot('P2', 'registered'),
                  tfsa_p1=tot('P1', 'tfsa'), tfsa_p2=tot('P2', 'tfsa'),
-                 shortfall_from_p1=-min(0.0, after), account_fv=acc)
+                 shortfall_from_p1=-min(0.0, after),
+                 nonreg_total_p1=n1, nonreg_total_p2=n2, account_fv=acc)
 
 
 def consulting_schedule(plan: Plan) -> tuple[dict, dict]:

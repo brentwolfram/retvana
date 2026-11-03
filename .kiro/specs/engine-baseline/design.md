@@ -52,11 +52,12 @@ engines never import the app or the analyses.
 ## Data model
 
 `Plan` is a single dataclass tree: `Person` ×2 (key `P1` / `P2`), `Account[]` (owner, kind
-`registered`/`tfsa`, balance, contribution, return, volatility), `ExpenseItem[]` (monthly, optional
+`registered`/`tfsa`/`nonreg`, balance, contribution, return, volatility), `ExpenseItem[]` (monthly, optional
 later-phase amount, discretionary flag), `OptionGrant[]` (`option_grants`), `ConsultingIncome[]`
 (owner, amount, years, `indexed`, `rrsp`, `via_corp`), `Property[]` ("Property 1" to "Property 3"),
 `Townhouse`, `Mortgage[]`, `Segment[]`, `LegacyScenario[]`, plus scalar rates and switches
-(`base_nonreg_p2`, `options_share_price`, `options_marginal_rate`, `p1_shareholder`, …).
+(`options_share_price`, `options_marginal_rate`, `p1_shareholder`, …). A saved `base_nonreg_p2` is
+converted on load into a Person 2 non-registered account (amended by nonreg-accounts).
 
 - `to_json` / `from_json` use `dataclasses.asdict` and drop unknown keys, so an older saved plan
   still loads. Missing keys take the dataclass defaults.

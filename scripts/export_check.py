@@ -16,6 +16,9 @@ Monte Carlo runs use 200 paths.
 - values only: no formula cells (openpyxl data type 'f' or a string starting with '='), and no
   <f> element in any worksheet XML. Chart series references live in the chart parts, not in
   the worksheets, so they are allowed.
+- nonreg-accounts Req 8.1, 8.2, 10.9: the Inputs sheet's A1 is "Investment accounts", its rows are
+  exactly the plan's account names, the "Sam non-registered" row is Type nonreg, owner Sam, value
+  150,000 at 2032, and no cell reads "Registered and TFSA accounts".
 """
 import io
 import posixpath
@@ -225,6 +228,33 @@ for tag, p, strat, expect in cases:
     if not p.returns_mc:
         check(f'{tag}: no market solver confidence without market risk',
               'Spending solver confidence (markets) %' not in s)
+
+    # Inputs sheet accounts table (Req 8.1, 8.2, 10.9): title in A1, header in row 2,
+    # one row per account from row 3 until the blank row after the table.
+    wsi = wb['Inputs']
+    check(f'{tag}: Inputs A1 is "Investment accounts"', wsi['A1'].value == 'Investment accounts',
+          f'{wsi["A1"].value!r}')
+    hdr = [c.value for c in wsi[2]]
+    rows = []
+    for r in wsi.iter_rows(min_row=3, values_only=True):
+        if r[0] is None:
+            break
+        rows.append(dict(zip(hdr, r)))
+    want_names = [a.name for a in p.accounts]
+    got_names = [r['Account'] for r in rows]
+    check(f'{tag}: Inputs account rows are exactly the plan accounts', got_names == want_names,
+          f'got {got_names}, expected {want_names}')
+    # Example_Plan: "Sam non-registered" is $150,000 at 0% growth with no contribution, so its value
+    # at retirement (2032) is the balance unchanged.
+    check(f'{tag}: retirement year is 2032', p.start_year == 2032, f'{p.start_year}')
+    sam = next((r for r in rows if r.get('Account') == 'Sam non-registered'), None)
+    got_sam = None if sam is None else (sam.get('Type'), sam.get('Owner'), sam.get('Value at 2032'))
+    check(f'{tag}: "Sam non-registered" row is nonreg, owner Sam, 150,000 at 2032',
+          got_sam is not None and got_sam[:2] == ('nonreg', 'Sam') and got_sam[2] == 150_000,
+          f'got {got_sam}')
+    old = [f'{ws.title}!{c.coordinate}' for ws in wb.worksheets for r in ws.iter_rows() for c in r
+           if c.value == 'Registered and TFSA accounts']
+    check(f'{tag}: no cell reads "Registered and TFSA accounts"', not old, f'{old[:5]}')
 
 print('\nEXPORT CHECK', 'PASS' if ok else 'FAIL')
 sys.exit(0 if ok else 1)

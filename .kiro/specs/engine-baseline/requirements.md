@@ -56,6 +56,10 @@ scenario is reproducible.
    `Plan.from_json`). Unknown top-level keys SHALL be ignored, and missing keys SHALL take their
    defaults. **(limitation)** An unknown key inside a nested object (a person, account, etc.) raises an
    error.
+
+   **Amended by nonreg-accounts:** one top-level key is not ignored. A non-zero `base_nonreg_p2`, written
+   by plans saved before the nonreg-accounts spec, SHALL be converted on load into one Person 2
+   non-registered account under nonreg-accounts Requirement 5.
 3. WHEN the app starts AND `plan.json` exists in the Data_Dir, THE app SHALL load it. Otherwise it SHALL
    start from the app defaults. **(limitation)** In the baseline, a saved plan that could not be read
    stopped the app from starting, with no fallback. The open-source-release spec replaced this: the app
@@ -71,17 +75,23 @@ scenario is reproducible.
 balances, so the projection starts from a realistic position.
 
 #### Acceptance criteria
-1. FOR each registered and TFSA account, THE engine SHALL grow today's balance to the retirement year as
-   Excel `FV(rate, years, -contribution, -balance)`: contributions at year end. Accounts marked "TFSA
-   limit" contribute the plan's TFSA limit ($7,000).
+1. FOR each account, of kind `registered`, `tfsa` or `nonreg`, THE engine SHALL grow today's balance
+   to the retirement year as Excel `FV(rate, years, -contribution, -balance)`: contributions at year
+   end. Accounts marked "TFSA limit" contribute the plan's TFSA limit ($7,000). Non-registered growth
+   before retirement is not taxed. **(simplification)** *Amended by nonreg-accounts* (was: registered
+   and TFSA accounts only).
 2. THE engine SHALL compute the employee stock option net proceeds (`engine.options_net_proceeds()`) as
    Σ max(available × (`options_share_price` − grant price), 0) × (1 − 0.5 × `options_marginal_rate`), for
    all `option_grants`. The options belong to Person 1; this is a rule carried over from the original
    spreadsheet, not a plan setting.
-3. THE engine SHALL compute the property surplus (Requirement 3) and set:
-   - Person 2's non-registered (`nonreg_p2`) = max(0, `base_nonreg_p2` + surplus);
-   - Person 1's non-registered (`nonreg_p1`) = option proceeds + min(0, `base_nonreg_p2` + surplus): a
-     shortfall is funded from Person 1.
+3. THE engine SHALL compute the property surplus (Requirement 3). With N1 and N2 the sums of Person 1's
+   and Person 2's non-registered accounts at retirement (criterion 1), it SHALL set:
+   - Person 2's non-registered (`nonreg_p2`) = max(0, N2 + surplus);
+   - Person 1's non-registered (`nonreg_p1`) = option proceeds + N1 + min(0, N2 + surplus): a shortfall
+     beyond Person 2's non-registered money is funded from Person 1;
+   - `shortfall_from_p1` = −min(0, N2 + surplus).
+
+   *Amended by nonreg-accounts* (was: `base_nonreg_p2` in place of N2, and no N1).
 4. THE engine SHALL inflate the yearly expenses from today's dollars to the retirement year at the expense
    CPI (`expense_cpi`, default 2.8%), separately for the go-go and later phases.
 5. WITH the spreadsheet settings, THE starting values SHALL match the original spreadsheet's Inputs B8,
@@ -293,7 +303,8 @@ properly, so estate and lasting money are realistic.
 1. EACH path SHALL have one standard-normal shock per calendar year (seed 1971), shared by every retirement
    year compared.
 2. THE retirement return SHALL be exp(ln(1 + r) + σ·z) − 1, so the median equals the plan's return. Each
-   account's pre-retirement return uses its own rate and volatility, driven by the same shock.
+   account's pre-retirement return, non-registered accounts included, uses its own rate and
+   volatility, driven by the same shock. *Amended by nonreg-accounts.*
 3. IN recovery mode, path i SHALL pair market path i with property path i.
 4. THE first-year stress test SHALL add the chosen move to every path's first retirement-year return.
 5. Success SHALL mean the money lasts (glossary). THE app SHALL report the success rate, the capital

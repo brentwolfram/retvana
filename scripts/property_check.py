@@ -351,12 +351,19 @@ surplus = (total - sum(hand_balance(m.balance, m.rate, m.amort_years, m.first_pa
                                     m.first_payment_month, m.term_months, m.renewal_rate, p.start_year)
                        for m in p.mortgages)
            - total * COMM - hand_cgt(vals) - 2 * hand_ltt_one(price) - price)
-after = p.base_nonreg_p2 + surplus
+n1 = tot('P1', 'nonreg')                                    # Non_Registered_Total by hand FV
+n2 = tot('P2', 'nonreg')
+after = n2 + surplus
 check('app defaults: the waterfall uses the recovery median path', close(st.waterfall.surplus, surplus, 0.01),
       f'{st.waterfall.surplus:,.2f} vs {surplus:,.2f}')
-check('app defaults: Person 2 non-reg = max(0, base + surplus), Person 1 = options + min(0, base + surplus)',
-      close(st.nonreg_p2, max(0.0, after), 0.01) and close(st.nonreg_p1, options + min(0.0, after), 0.01),
-      f'P2 {st.nonreg_p2:,.0f} P1 {st.nonreg_p1:,.0f}')
+check('app defaults: non-registered totals at retirement = year-by-year FV of each person\'s nonreg accounts',
+      close(st.nonreg_total_p1, n1, 0.01) and close(st.nonreg_total_p2, n2, 0.01),
+      f'P1 {st.nonreg_total_p1:,.2f} vs {n1:,.2f}, P2 {st.nonreg_total_p2:,.2f} vs {n2:,.2f}')
+check('app defaults: Person 2 non-reg = max(0, N2 + surplus), Person 1 = options + N1 + min(0, N2 + surplus), '
+      'shortfall from Person 1 = -min(0, N2 + surplus)',
+      close(st.nonreg_p2, max(0.0, after), 0.01) and close(st.nonreg_p1, options + n1 + min(0.0, after), 0.01)
+      and close(st.shortfall_from_p1, -min(0.0, after), 0.01),
+      f'P2 {st.nonreg_p2:,.0f} P1 {st.nonreg_p1:,.0f} shortfall {st.shortfall_from_p1:,.0f}')
 gogo = sum(e.monthly * 12 for e in p.expenses) * (1 + p.expense_cpi) ** n
 later = sum((e.monthly if e.monthly_later is None else e.monthly_later) * 12 for e in p.expenses) * (1 + p.expense_cpi) ** n
 check(f'app defaults: go-go and later expenses inflated at {p.expense_cpi:.1%} to the retirement year',

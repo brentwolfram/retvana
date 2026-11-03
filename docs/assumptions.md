@@ -25,7 +25,7 @@ These are plan settings with these defaults; change them in the Inputs tab.
 
 | Setting | Default |
 |---|---|
-| Return in retirement, all accounts | 5.5% a year (one rate for every account in a year, Req 6.3) |
+| Return in retirement, all accounts | 5.5% a year (one rate for every account in a year, including both non-registered pools, Req 6.3) |
 | Inflation, expense CPI and CPP inflation | 2.8% |
 | Taxable share of non-registered returns | 75% |
 | Go-go phase | 15 years of the go-go spending amount, then the later amount (Req 6.2) |
@@ -41,6 +41,16 @@ Two setting groups matter when reading results:
   reproduces the original spreadsheet it was ported from.
 - **The app defaults** (`fresh_plan()` in `app.py`): the recovery property model, TFSA top-up,
   marginal-rate extra tax and life expectancy all on. The app starts here.
+
+## Accounts before retirement
+
+Each account, registered, TFSA or non-registered, grows from its current balance at its own rate until
+the retirement year, with its yearly contribution added at year end (Req 2.1). With market risk on,
+each account also has its own volatility on the shared yearly shock (Req 14.2). At retirement each
+person's non-registered accounts are added into one non-registered pool. The property surplus goes
+into Person 2's pool; a shortfall larger than Person 2's non-registered money is taken from Person 1's
+pool, which also holds the employee stock option proceeds (Req 2.3). From retirement on, one return
+applies to every account in a year (Req 6.3).
 
 ## Inherited rules
 
@@ -74,16 +84,26 @@ Each is marked **(simplification)** in the baseline spec.
 | The survivor CPP under-65 flat-rate part and the CPP death benefit are not modelled | Req 10.3 | A survivor under 65 gets only the 37.5% share of the deceased's pension, with no flat-rate amount and no death benefit |
 | Corporate investment income: the untaxed 25% is paid out the same year as a tax-free capital dividend | Req 13.3 | The taxable 75% is taxed at 50.17% (30.67% of it added to RDTOH); the tax-free part is never held back in the corporation |
 | Estate after tax has no deemed disposition of non-registered gains and no probate | Req 17.1 | Registered balances are taxed at the top rate and the corporation is wound up, but non-registered and TFSA pass as-is |
+| Non-registered accounts grow before retirement with no tax on the growth | Req 2.1 | Overstates the non-registered balance at retirement for a taxable account; enter an after-tax growth rate to reflect the drag |
 
 ## Limitations
 
 Marked **(limitation)** in the baseline spec:
 
 - An unknown key inside a nested plan object (a person, an account) raises an error when a plan loads;
-  unknown top-level keys are ignored and missing keys take their defaults (Req 1.2). Full schema
-  validation and migration of saved plans are left to a later spec.
+  unknown top-level keys are ignored and missing keys take their defaults (Req 1.2), except a saved
+  `base_nonreg_p2`, which is converted on load (see "Plans saved before non-registered accounts"
+  below). Full schema validation and migration of saved plans are left to a later spec.
 - A saved plan that cannot be read no longer stops the app: it warns, starts from the example household
   and leaves the file untouched (Req 1.3).
+
+## Plans saved before non-registered accounts
+
+A plan saved with the old "base non-registered" amount (`base_nonreg_p2`) loads with that amount as one
+Person 2 non-registered account: same balance, 0% growth, no contribution, "TFSA limit" off and 0%
+volatility, named "<Person 2's name> non-registered" (with " (2)", " (3)" … if the name is taken).
+These terms give the same results as before. Edit the growth and contribution in the Investment
+accounts table, then use "Save as default". The file is not changed until you save. (Req 1.2)
 
 ## RRIF minimum factors
 

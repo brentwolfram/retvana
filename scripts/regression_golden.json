@@ -665,7 +665,7 @@
     }
   ],
   "columns": {"dollars": ["AA", "AB", "AC", "AD", "ADc", "AE", "AG", "B", "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BU", "BV", "BW", "BX", "BY", "BZ", "C", "CC", "CD", "CDA", "CE", "CF", "CG", "CJ", "CK", "CL", "CM", "CN", "CORP", "CORP_ACTIVE", "CORP_END", "CORP_REFUND", "CORP_TAX", "CORP_TINV", "CPP_P1", "CPP_P2", "D_P1", "D_P2", "F", "G", "H", "I", "J", "K", "M", "N", "O", "P", "Q", "Qc", "R", "RDTOH", "S", "T", "T_P1", "T_P2", "U", "V", "W", "W_P1", "W_P2", "X", "Z", "thr0", "thr1", "thr2", "thr3", "thr4", "thr5", "thr6", "thr7", "thr8"], "other": ["A", "D", "E", "L", "Y", "age_P1", "age_P2", "alive_P1", "alive_P2"]},
-  "example_plan_sha256": "154a5156869085c2f64be50b70bf0b3ed543117d4f5a48658b239f74fc79540f",
+  "example_plan_sha256": "d30130a02d78d6dd69b0f112431c2fde3186b4805a082803a9f14dbfd124b612",
   "generator": "scripts/make_regression_golden.py",
   "schema": 1,
   "tolerance": {"dollars": 0.01, "other": 1e-09}

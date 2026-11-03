@@ -21,11 +21,21 @@ class Person:
     death_age: int = 95           # alive through the end of the year this age is reached
 
 
+ACCOUNT_KINDS = ('registered', 'tfsa', 'nonreg')   # accepted values of Account.kind
+
+
+def check_account_kind(account: 'Account') -> None:
+    """Raise ValueError naming the account and the kind when the kind is not in ACCOUNT_KINDS."""
+    if account.kind not in ACCOUNT_KINDS:
+        raise ValueError(f'account {account.name!r} has unknown kind {account.kind!r}; '
+                         f'expected one of {", ".join(ACCOUNT_KINDS)}')
+
+
 @dataclass
 class Account:
     name: str
     owner: str                    # 'P1' or 'P2'
-    kind: str                     # 'registered' or 'tfsa'
+    kind: str                     # one of ACCOUNT_KINDS: 'registered', 'tfsa' or 'nonreg'
     balance: float                # value at current_year
     return_rate: float            # growth until retirement
     contribution: float = 0.0     # yearly contribution until retirement
@@ -121,6 +131,20 @@ class ExpenseItem:
     monthly_later: Optional[float] = None  # None = same as go-go
 
 
+LEGACY_NONREG_KEY = 'base_nonreg_p2'   # plans saved before nonreg-accounts; converted by Plan.from_dict
+
+
+def _legacy_nonreg_account(plan: 'Plan', balance: float) -> 'Account':
+    """The Equivalent_Account for a saved base_nonreg_p2 (nonreg-accounts Requirement 5)."""
+    p2 = next((p for p in plan.people if p.key == 'P2'), None)
+    stem = f'{p2.name} non-registered' if p2 is not None and p2.name else 'Person 2 non-registered'
+    taken = {a.name for a in plan.accounts}
+    name, k = stem, 2
+    while name in taken:
+        name, k = f'{stem} ({k})', k + 1
+    return Account(name, 'P2', 'nonreg', balance, 0.0, 0.0, False, 0.0)
+
+
 @dataclass
 class Plan:
     # --- timeline ---
@@ -139,7 +163,6 @@ class Plan:
     expenses: list = field(default_factory=list)
     income_splitting: bool = False
     tfsa_limit: float = 7000
-    base_nonreg_p2: float = 0.0
     # --- employee stock options (Person 1) ---
     options_share_price: float = 0.0
     options_marginal_rate: float = 0.5353
@@ -275,7 +298,11 @@ class Plan:
                 kw[k] = {int(a): float(b) for a, b in v.items()}
             else:
                 kw[k] = v
-        return cls(**kw)
+        plan = cls(**kw)
+        legacy = d.get(LEGACY_NONREG_KEY)
+        if legacy is not None and float(legacy) != 0:
+            plan.accounts.append(_legacy_nonreg_account(plan, float(legacy)))
+        return plan
 
     @classmethod
     def from_json(cls, text: str) -> 'Plan':
@@ -319,8 +346,8 @@ def example_plan() -> Plan:
         Account('Sam LIRA', 'P2', 'registered', 400_000, 0.06, 0),
         Account('Sam DC pension', 'P2', 'registered', 150_000, 0.06, 18_000),
         Account('Sam TFSA', 'P2', 'tfsa', 120_000, 0.04, 0, True, 0.06),
+        Account('Sam non-registered', 'P2', 'nonreg', 150_000, 0.0, 0, False, 0.0),
     ]
-    p.base_nonreg_p2 = 150_000
     p.expenses = [
         ExpenseItem('Property tax', 500),
         ExpenseItem('Utilities', 250),

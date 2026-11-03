@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Non-registered accounts: a third account kind, `nonreg`, for either person. Each grows at its own rate
+  and takes its own contribution until retirement, like the registered and TFSA accounts.
+
+### Changed
+
+- The "Registered and TFSA accounts" table in the app and the export is now "Investment accounts".
+- A plan saved with `base_nonreg_p2` loads with that amount as a Person 2 non-registered account at 0%
+  growth and no contribution, which gives the same results as before.
+- An account with an unknown kind now stops the projection with an error naming the account.
+
+### Removed
+
+- The `base_nonreg_p2` plan field and the app's "base non-registered" input.
+
 ## [0.1.0] - 2026-10-28
 
 First public release.

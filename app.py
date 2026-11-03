@@ -20,7 +20,7 @@ import streamlit as st
 from retvana import analysis, engine, export
 from retvana.engine import column_label
 from retvana import property_model as pm
-from retvana.config import Account, ConsultingIncome, ExpenseItem, OptionGrant, Plan, example_plan
+from retvana.config import ACCOUNT_KINDS, Account, ConsultingIncome, ExpenseItem, OptionGrant, Plan, example_plan
 from retvana.plan_io import PlanFileUnreadable, data_dir, load_saved_plan, save_plan
 
 st.set_page_config(page_title='retvana - Retirement Model', page_icon='🌅', layout='wide')
@@ -374,7 +374,7 @@ with tab_in:
                'Edits apply immediately; use "Save as default" in the sidebar to keep them.')
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown('**Registered and TFSA accounts**')
+        st.markdown('**Investment accounts**')
         base = st.session_state.setdefault('base_acc', pd.DataFrame([{
             'Account': a.name, 'Owner': a.owner, 'Type': a.kind, 'Balance': a.balance,
             'Growth %': a.return_rate * 100, 'Volatility %': a.volatility * 100,
@@ -383,7 +383,7 @@ with tab_in:
         ed = st.data_editor(base, key='ed_acc', hide_index=True, width='stretch', num_rows='dynamic',
                             column_config={
                                 'Owner': st.column_config.SelectboxColumn(options=['P1', 'P2']),
-                                'Type': st.column_config.SelectboxColumn(options=['registered', 'tfsa']),
+                                'Type': st.column_config.SelectboxColumn(options=list(ACCOUNT_KINDS)),
                                 'Balance': st.column_config.NumberColumn(format='$%.0f'),
                                 'Growth %': st.column_config.NumberColumn(format='%.2f'),
                                 'Volatility %': st.column_config.NumberColumn(
@@ -397,9 +397,6 @@ with tab_in:
         cc = st.columns(2)
         plan.tfsa_limit = cc[0].number_input('TFSA annual limit', 0, 20_000, int(plan.tfsa_limit), 500,
                                              key='w_tfsa')
-        plan.base_nonreg_p2 = cc[1].number_input(f'{p2.name} base non-registered', 0, 5_000_000,
-                                                 int(plan.base_nonreg_p2), 10_000, key='w_bnr',
-                                                    help='Before the property surplus is added.')
         st.markdown(f'**Employee stock options ({p1.name})**')
         cc = st.columns(2)
         plan.options_share_price = cc[0].number_input('Share price', 0.0, 200.0, float(plan.options_share_price),
@@ -704,8 +701,9 @@ with tab_over:
         m[4].metric('Lifetime income tax', money(summ['Lifetime income tax']))
     if start.shortfall_from_p1 > 0:
         st.info(md(f'The property sales leave a shortfall of **{money(start.shortfall_from_p1, False)}** after '
-                   f"{p2.name}'s base {money(plan.base_nonreg_p2, False)}. It is funded from {p1.name}'s "
-                   'non-registered (employee stock option proceeds).'))
+                   f"{p2.name}'s non-registered accounts ({money(start.nonreg_total_p2, False)} at retirement). "
+                   f"It is funded from {p1.name}'s non-registered money (employee stock option proceeds and "
+                   f"{p1.name}'s non-registered accounts)."))
     d = df[df['A'] <= end]
     left, right = st.columns([3, 2])
     with left:
