@@ -1,0 +1,31 @@
+# Light and dark palettes: the app follows the OS appearance by default, and
+# Settings (top-right menu) offers Light / Dark / System.
+[theme]
+font = "sans serif"
+
+[theme.light]
+primaryColor = "#1F3A5F"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F3F6FA"
+textColor = "#1B2430"
+
+[theme.light.sidebar]
+backgroundColor = "#F3F6FA"
+
+[theme.dark]
+primaryColor = "#6FA3E0"
+backgroundColor = "#0E141C"
+secondaryBackgroundColor = "#18222F"
+textColor = "#E6EAF0"
+
+[theme.dark.sidebar]
+backgroundColor = "#131B26"
+
+[server]
+# Local only: the app holds the full household financial picture and has no login.
+address = "localhost"
+port = 8501
+headless = true
+
+[browser]
+gatherUsageStats = false

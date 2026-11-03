@@ -1,0 +1,503 @@
+{
+  "start_year": 2032,
+  "current_year": 2026,
+  "end_year": 2080,
+  "fixed_end_year": 2080,
+  "return_rate": 0.055,
+  "inflation": 0.028,
+  "expense_cpi": 0.028,
+  "gogo_years": 15,
+  "people": [
+    {
+      "key": "P1",
+      "name": "Alex",
+      "birth_year": 1975,
+      "cpp_monthly_at_65": 1100,
+      "cpp_start_age": 65,
+      "oas_start_age": 65,
+      "taxable_share": 0.75,
+      "rrif_min_age": 55,
+      "death_age": 92
+    },
+    {
+      "key": "P2",
+      "name": "Sam",
+      "birth_year": 1980,
+      "cpp_monthly_at_65": 1300,
+      "cpp_start_age": 65,
+      "oas_start_age": 65,
+      "taxable_share": 0.75,
+      "rrif_min_age": 55,
+      "death_age": 96
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Alex RRSP",
+      "owner": "P1",
+      "kind": "registered",
+      "balance": 600000,
+      "return_rate": 0.06,
+      "contribution": 6000,
+      "contribution_is_tfsa_limit": false,
+      "volatility": 0.12
+    },
+    {
+      "name": "Alex LIRA",
+      "owner": "P1",
+      "kind": "registered",
+      "balance": 50000,
+      "return_rate": 0.06,
+      "contribution": 0,
+      "contribution_is_tfsa_limit": false,
+      "volatility": 0.12
+    },
+    {
+      "name": "Alex TFSA",
+      "owner": "P1",
+      "kind": "tfsa",
+      "balance": 120000,
+      "return_rate": 0.04,
+      "contribution": 0,
+      "contribution_is_tfsa_limit": true,
+      "volatility": 0.06
+    },
+    {
+      "name": "Sam RRSP",
+      "owner": "P2",
+      "kind": "registered",
+      "balance": 300000,
+      "return_rate": 0.06,
+      "contribution": 0,
+      "contribution_is_tfsa_limit": false,
+      "volatility": 0.12
+    },
+    {
+      "name": "Sam LIRA",
+      "owner": "P2",
+      "kind": "registered",
+      "balance": 400000,
+      "return_rate": 0.06,
+      "contribution": 0,
+      "contribution_is_tfsa_limit": false,
+      "volatility": 0.12
+    },
+    {
+      "name": "Sam DC pension",
+      "owner": "P2",
+      "kind": "registered",
+      "balance": 150000,
+      "return_rate": 0.06,
+      "contribution": 18000,
+      "contribution_is_tfsa_limit": false,
+      "volatility": 0.12
+    },
+    {
+      "name": "Sam TFSA",
+      "owner": "P2",
+      "kind": "tfsa",
+      "balance": 120000,
+      "return_rate": 0.04,
+      "contribution": 0,
+      "contribution_is_tfsa_limit": true,
+      "volatility": 0.06
+    }
+  ],
+  "expenses": [
+    {
+      "name": "Property tax",
+      "monthly": 500,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Utilities",
+      "monthly": 250,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Home maintenance",
+      "monthly": 300,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Home insurance",
+      "monthly": 150,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Health insurance",
+      "monthly": 400,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Internet and phones",
+      "monthly": 200,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Groceries",
+      "monthly": 1000,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Car and transit",
+      "monthly": 400,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Clothing and personal",
+      "monthly": 250,
+      "discretionary": false,
+      "monthly_later": null
+    },
+    {
+      "name": "Travel",
+      "monthly": 3000,
+      "discretionary": true,
+      "monthly_later": 1500
+    },
+    {
+      "name": "Restaurants",
+      "monthly": 1000,
+      "discretionary": true,
+      "monthly_later": 600
+    },
+    {
+      "name": "Hobbies",
+      "monthly": 500,
+      "discretionary": true,
+      "monthly_later": 300
+    }
+  ],
+  "income_splitting": false,
+  "tfsa_limit": 7000,
+  "base_nonreg_p2": 150000,
+  "options_share_price": 4.0,
+  "options_marginal_rate": 0.5353,
+  "option_grants": [
+    {
+      "grant_date": "2023-03-01",
+      "expiry": "2033-03-01",
+      "grant_price": 1.0,
+      "granted": 10000,
+      "available": 10000
+    },
+    {
+      "grant_date": "2024-03-01",
+      "expiry": "2034-03-01",
+      "grant_price": 2.0,
+      "granted": 10000,
+      "available": 10000
+    },
+    {
+      "grant_date": "2025-03-01",
+      "expiry": "2035-03-01",
+      "grant_price": 3.0,
+      "granted": 5000,
+      "available": 5000
+    }
+  ],
+  "property_mode": "legacy",
+  "legacy_scenario": "Base",
+  "legacy_scenarios": [
+    {
+      "name": "Bear",
+      "recovery_years": 3,
+      "recovery_rate": 0.0,
+      "long_run_rate": 0.025,
+      "rationale": "Slump persists: flat for 3 years, then roughly inflation."
+    },
+    {
+      "name": "Base",
+      "recovery_years": 3,
+      "recovery_rate": 0.06,
+      "long_run_rate": 0.035,
+      "rationale": "Gradual recovery as inventory clears, then inflation + ~0.7%."
+    },
+    {
+      "name": "Bull",
+      "recovery_years": 3,
+      "recovery_rate": 0.1,
+      "long_run_rate": 0.045,
+      "rationale": "Sharp rebound for 3 years, then strong long-run growth."
+    },
+    {
+      "name": "Boom",
+      "recovery_years": 99,
+      "recovery_rate": 0.115,
+      "long_run_rate": 0.115,
+      "rationale": "2012-2022 rates (10-13%) sustained. Stress test, not a plan."
+    }
+  ],
+  "segments": [
+    {
+      "key": "condo_townhouse",
+      "label": "Condo townhouse (family size)",
+      "recovery_target": 1.0,
+      "recovery_speed": 0.3,
+      "long_run_growth": 0.035,
+      "beta": 0.9,
+      "idio_vol": 0.05,
+      "sale_discount": 0.0,
+      "rationale": "Scarce, family-sized, end-user demand. Fell far less than condo apartments; expect full recovery to the 2022 peak."
+    },
+    {
+      "key": "condo_apartment",
+      "label": "Condo apartment (1-2 bed)",
+      "recovery_target": 0.9,
+      "recovery_speed": 0.2,
+      "long_run_growth": 0.03,
+      "beta": 1.1,
+      "idio_vol": 0.07,
+      "sale_discount": 0.0,
+      "rationale": "Recovers most, not all, of the loss as new supply is absorbed."
+    },
+    {
+      "key": "studio",
+      "label": "Studio / micro unit",
+      "recovery_target": 0.85,
+      "recovery_speed": 0.15,
+      "long_run_growth": 0.025,
+      "beta": 1.2,
+      "idio_vol": 0.09,
+      "sale_discount": 0.03,
+      "rationale": "Investor-driven, hardest hit, most supply in the pipeline, hard to finance. Slow, partial recovery and a 3% haircut for a thinner buyer pool."
+    },
+    {
+      "key": "freehold_townhouse",
+      "label": "Freehold townhouse",
+      "recovery_target": 1.0,
+      "recovery_speed": 0.3,
+      "long_run_growth": 0.04,
+      "beta": 1.0,
+      "idio_vol": 0.05,
+      "sale_discount": 0.0,
+      "rationale": "Land-backed, end-user demand. Fell less than condos and has historically outgrown them; this is the price you are buying into."
+    }
+  ],
+  "market_vol": 0.07,
+  "market_momentum": 0.5,
+  "properties": [
+    {
+      "name": "Property 1",
+      "segment": "condo_townhouse",
+      "value_today": 750000,
+      "peak_value": 850000,
+      "purchase_price": 800000,
+      "purchase_year": 2020,
+      "principal_residence": true,
+      "acb": null,
+      "description": ""
+    },
+    {
+      "name": "Property 2",
+      "segment": "studio",
+      "value_today": 350000,
+      "peak_value": 420000,
+      "purchase_price": 400000,
+      "purchase_year": 2019,
+      "principal_residence": false,
+      "acb": 380000,
+      "description": ""
+    },
+    {
+      "name": "Property 3",
+      "segment": "condo_apartment",
+      "value_today": 500000,
+      "peak_value": 650000,
+      "purchase_price": 650000,
+      "purchase_year": 2021,
+      "principal_residence": false,
+      "acb": null,
+      "description": ""
+    }
+  ],
+  "mortgages": [
+    {
+      "name": "Mortgage on Property 3",
+      "secured_on": "Property 3",
+      "balance": 450000,
+      "rate": 0.045,
+      "amort_years": 25,
+      "first_payment_year": 2025,
+      "first_payment_month": 2,
+      "term_months": 36,
+      "renewal_rate": null
+    },
+    {
+      "name": "Mortgage on Property 1",
+      "secured_on": "Property 1",
+      "balance": 180000,
+      "rate": 0.04,
+      "amort_years": 15,
+      "first_payment_year": 2025,
+      "first_payment_month": 11,
+      "term_months": 36,
+      "renewal_rate": null
+    }
+  ],
+  "townhouse": {
+    "price_today": 1050000,
+    "peak_value": 1150000,
+    "segment": "freehold_townhouse",
+    "follows_market": true,
+    "areas": ""
+  },
+  "commission_rate": 0.05,
+  "hst": 0.13,
+  "cg_inclusion": 0.5,
+  "ltt_brackets": [
+    [
+      0,
+      55000,
+      0.005,
+      0.005
+    ],
+    [
+      55000,
+      250000,
+      0.01,
+      0.01
+    ],
+    [
+      250000,
+      400000,
+      0.015,
+      0.015
+    ],
+    [
+      400000,
+      2000000,
+      0.02,
+      0.02
+    ],
+    [
+      2000000,
+      3000000,
+      0.025,
+      0.025
+    ]
+  ],
+  "tax_thresholds": [
+    0,
+    62414,
+    67778,
+    105180,
+    124830,
+    135555,
+    181980,
+    210130,
+    266905
+  ],
+  "tax_rates": [
+    0.2005,
+    0.2415,
+    0.2965,
+    0.3148,
+    0.3389,
+    0.3791,
+    0.4341,
+    0.4641,
+    0.5353
+  ],
+  "bpa": 19053,
+  "index_brackets_to_start": true,
+  "rrif_factors": {
+    "0": 0.0,
+    "55": 0.0286,
+    "56": 0.0294,
+    "57": 0.0303,
+    "58": 0.0313,
+    "59": 0.0323,
+    "60": 0.0333,
+    "61": 0.0345,
+    "62": 0.0357,
+    "63": 0.037,
+    "64": 0.0385,
+    "65": 0.04,
+    "66": 0.0417,
+    "67": 0.0435,
+    "68": 0.0455,
+    "69": 0.0476,
+    "70": 0.05,
+    "71": 0.0738,
+    "72": 0.0748,
+    "73": 0.0759,
+    "74": 0.0771,
+    "75": 0.0785,
+    "76": 0.0799,
+    "77": 0.0815,
+    "78": 0.0833,
+    "79": 0.0853,
+    "80": 0.0875,
+    "81": 0.0899,
+    "82": 0.0927,
+    "83": 0.0958,
+    "84": 0.0993,
+    "85": 0.1033,
+    "86": 0.1079,
+    "87": 0.1133,
+    "88": 0.1196,
+    "89": 0.1271,
+    "90": 0.1362,
+    "91": 0.1473,
+    "92": 0.1612,
+    "93": 0.1792,
+    "94": 0.2,
+    "95": 0.2
+  },
+  "use_death_ages": false,
+  "survivor_spending": 0.7,
+  "cpp_max_monthly_2026": 1507.65,
+  "cpp_survivor_rate": 0.6,
+  "cpp_survivor_rate_under65": 0.375,
+  "withdrawal_strategy": "minimums",
+  "bracket_target": 95000,
+  "fill_until_age": 71,
+  "rrif_conversion_age": 71,
+  "tfsa_topup": false,
+  "accurate_extra_tax": false,
+  "consulting": [],
+  "ympe_2026": 74600,
+  "yampe_2026": 85000,
+  "cpp_exemption": 3500,
+  "cpp_se_rate": 0.119,
+  "cpp2_se_rate": 0.08,
+  "rrsp_limit_2026": 33810,
+  "corp_balance": 0.0,
+  "corp_sbd_rate": 0.112,
+  "corp_general_rate": 0.265,
+  "corp_sbd_limit": 500000,
+  "corp_passive_rate": 0.5017,
+  "corp_refundable_rate": 0.3067,
+  "corp_refund_rate": 0.3833,
+  "ne_gross_up": 0.15,
+  "ne_dtc_rate": 0.110201,
+  "dividend_policy": "target",
+  "dividend_target": 90000,
+  "p1_shareholder": false,
+  "spend_target_estate": 1000000,
+  "spend_mode": "all",
+  "spend_confidence": 0.9,
+  "returns_mc": false,
+  "return_vol": 0.1,
+  "mc_pre_retirement": true,
+  "first_year_shock": 0.0,
+  "success_floor": 0.0,
+  "cpp_inflation": 0.028,
+  "cpp_full_years": 39,
+  "cpp_proportional": true,
+  "oas_base_year": 2026,
+  "oas_max_monthly": 751.97,
+  "oas_threshold": 95323,
+  "oas_uplift_75": 0.1,
+  "oas_clawback_rate": 0.15
+}

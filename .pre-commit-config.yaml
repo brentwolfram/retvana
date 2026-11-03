@@ -1,0 +1,31 @@
+# Leak guards. Install both hook types once per clone with `pre-commit install`.
+# The local hooks use only the standard library, so they need no additional_dependencies.
+default_install_hook_types: [pre-commit, pre-push]
+# Hooks without their own `stages` run at commit time only; the pre-push stage runs the Release_Gate.
+default_stages: [pre-commit]
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+  - repo: local
+    hooks:
+      - id: forbidden-files
+        name: forbidden file check
+        entry: python scripts/forbidden_files.py --files
+        language: python
+        # `file` includes binary files, so the forbidden-file rules see them.
+        types: [file]
+      - id: commit-email
+        name: commit email check
+        entry: python scripts/check_commit_emails.py --pending
+        language: python
+        pass_filenames: false
+        always_run: true
+      - id: release-gate
+        name: release gate
+        entry: python scripts/release_gate.py --pre-push
+        language: python
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

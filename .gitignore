@@ -218,3 +218,40 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# ---------------------------------------------------------------------------
+# retvana: keep private data and local state out of the repo
+# ---------------------------------------------------------------------------
+# Virtual environments and Python caches
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+# Data directories (a local Data_Dir, Docker mounts, migration evidence)
+data/
+.data/
+retvana-data/
+migration/
+# Plans: the working plan, its save temp file, downloads and old-key copies.
+# Plan JSON is allowed only under examples/.
+plan.json
+plan.json.tmp
+*[Pp]lan*.json
+*[Pp]lan*.json.tmp
+!/examples/**/*.json
+# Spreadsheets and other private data formats
+*.xlsx
+*.xlsm
+*.xlsb
+*.xls
+*.ods
+*.csv
+*.ipynb
+*.pkl
+*.pickle
+*.db
+*.sqlite
+*.sqlite3
+# Kiro: local settings and per-spec task metadata
+.kiro/settings/
+.kiro/specs/**/tasks.meta.json

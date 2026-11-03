@@ -1,0 +1,42 @@
+name: Feature request
+description: Propose a new rule, analysis or app feature.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never include real financial data.** Do not paste or attach your plan file (`plan.json`), a
+        spreadsheet, an Excel export, a screenshot of your own plan, or any real names, ages, balances,
+        addresses or employer details. Use the example household or made-up round numbers.
+
+        A behaviour change starts with a spec change, so describe the rule the model should follow.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What you cannot model or do today, and why it matters for a plan.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behaviour
+      description: The rule or feature, with its source (legislation, CRA or provincial guidance, a paper).
+    validations:
+      required: true
+  - type: textarea
+    id: spec
+    attributes:
+      label: Spec impact
+      description: Which requirement in .kiro/specs/ would change or be added, if you know.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: no-personal-data
+    attributes:
+      label: Personal data
+      options:
+        - label: This request contains no real financial data, no plan file and no personal details.
+          required: true

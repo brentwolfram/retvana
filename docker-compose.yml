@@ -1,0 +1,23 @@
+services:
+  retvana:
+    build: .
+    image: retvana:latest
+    container_name: retvana
+    # published on the host's localhost only: the app holds household financial data and has no login
+    ports:
+      - "127.0.0.1:8501:8501"
+    environment:
+      RETVANA_DATA_DIR: /data
+    volumes:
+      # the host Data_Dir, so the local app and the container share one plan.json;
+      # `make up` sets RETVANA_HOST_DATA_DIR to the platformdirs path when it is unset
+      - ${RETVANA_HOST_DATA_DIR:?set RETVANA_HOST_DATA_DIR to the host data directory, or use make up}:/data
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /home/retvana:uid=1000,gid=1000,mode=0700
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true

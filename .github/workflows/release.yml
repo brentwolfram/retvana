@@ -1,0 +1,62 @@
+# Release: on a v* tag, run the full CI (make verify and every leak scan) on the tagged commit, then
+# create the GitHub release from the matching CHANGELOG.md entry. No release exists unless CI passed.
+#
+# `release` needs the single calling job `ci`. A job that calls a reusable workflow succeeds only when
+# every job in that workflow succeeds, so `needs: ci` makes `release` depend on all four CI jobs:
+# verify, gitleaks, commit-emails and forbidden-files. A failed or skipped CI job skips the release.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions: {}
+
+jobs:
+  ci:
+    name: ci
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  release:
+    name: release
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - name: Extract the CHANGELOG entry
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG#v}"
+          notes="$RUNNER_TEMP/release-notes.md"
+          # The section from "## [<version>]" up to the next "## [" heading or the link references.
+          awk -v hdr="## [${version}]" '
+            index($0, hdr) == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found && /^\[[^]]+\]: / { exit }
+            found { print }
+          ' CHANGELOG.md > "$notes"
+          if ! grep -q '[^[:space:]]' "$notes"; then
+            echo "CHANGELOG.md has no entry for ${version}" >&2
+            exit 1
+          fi
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          prerelease=()
+          if [[ "$TAG" == *-* ]]; then prerelease=(--prerelease); fi
+          gh release create "$TAG" --repo "$REPO" --verify-tag --title "$TAG" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" "${prerelease[@]}"

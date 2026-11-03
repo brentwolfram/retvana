@@ -1,0 +1,5 @@
+# Binary_Allowlist, read by scripts/forbidden_files.py.
+# One path pattern per line, relative to the repository root, '/'-separated.
+# '*' matches within one path segment only. Blank lines and '#' comments are ignored.
+# An allowed PNG must still carry no tEXt, iTXt, zTXt or eXIf chunks.
+docs/images/*.png

@@ -1,0 +1,2 @@
+*@users.noreply.github.com
+noreply@github.com
