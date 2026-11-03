@@ -1,0 +1,73 @@
+name: Bug report
+description: Something in the model or the app behaves wrongly.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never include real financial data.** Do not paste or attach your plan file (`plan.json`), a
+        spreadsheet, an Excel export, a screenshot of your own plan, or any real names, ages, balances,
+        addresses or employer details. Reproduce the problem with the example household
+        (`examples/example_household.json`) or made-up round numbers.
+
+        Security problems go through private vulnerability reporting, not a public issue (see SECURITY.md).
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Start from the example household and list each change you made, with made-up values.
+      placeholder: |
+        1. Start the app with the example household.
+        2. Change ... to ...
+        3. Open the ... tab.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: The figure or behaviour you expected, and why (a rule, a spec requirement, a source).
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: v0.1.0, or a commit hash
+    validations:
+      required: true
+  - type: dropdown
+    id: run-mode
+    attributes:
+      label: How you run it
+      options:
+        - Local venv (make run)
+        - Docker (make up)
+        - Library only (no app)
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: OS and Python version
+      placeholder: macOS 15, Python 3.13.1
+  - type: textarea
+    id: logs
+    attributes:
+      label: Error output
+      description: Any traceback or log output. Remove local paths and anything personal first.
+      render: text
+  - type: checkboxes
+    id: no-personal-data
+    attributes:
+      label: Personal data
+      options:
+        - label: This report contains no real financial data, no plan file and no personal details.
+          required: true
