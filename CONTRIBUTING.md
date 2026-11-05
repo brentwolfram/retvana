@@ -82,8 +82,9 @@ waits until its author fixes it.
   that print PASS/FAIL lines and exit non-zero on failure.
 - Dependencies are pinned exactly (`==`) in `pyproject.toml`; there are no `requirements*.txt` files. A
   new dependency needs a reason in the pull request.
-- If you add or change an image, strip its metadata and look at it before you commit. Only
-  `docs/images/*.png` may be binary.
+- If you add or change an image, strip its metadata and look at it before you commit.
+  Binary files are allowed only where `.binary-allow` lists them, currently `docs/images/*.png`
+  (documentation images) and `assets/*.png` (the app's logo and icon).
 
 ## Maintainer notes
 
